@@ -4,23 +4,66 @@ A mobile-friendly habit tracker built around a GitHub-style heatmap. The MVP
 goal is to let a signed-in user record a daily habit in under ten seconds and
 see recent consistency immediately.
 
-## Current milestone
+## Current status
 
-This repository currently contains only the application foundation. It does
-not yet include authentication, database models, habit forms, or heatmaps.
+The application foundation and authentication layer are in place. A user can
+register, log in, and reach a protected `/habits` dashboard. Habit creation and
+the heatmap view have not been built yet.
 
-Planned stack:
+### What is implemented
+
+- **Auth** — email/password registration and login via Better Auth with the
+  Prisma adapter. Sessions are validated server-side on each protected route.
+- **Routes**
+  - `/` — public landing page
+  - `/login` — login form (`LoginForm` client component)
+  - `/register` — registration form (`RegisterForm` client component)
+  - `/habits` — protected dashboard; redirects unauthenticated visitors to
+    `/login`, displays the signed-in user's name and a sign-out button
+  - `/api/auth/[...all]` — Better Auth catch-all API route
+- **Prisma** — client v7 configured with the `pg` driver adapter; output
+  directed to `src/generated/prisma`. No application models have been added to
+  the schema yet (Better Auth will generate its own tables).
+- **Stack wired up** — Next.js 16 App Router, React 19, TypeScript 5,
+  Tailwind CSS 4, Zod 4, `pg` 8.
+
+### What is not yet implemented
+
+- Habit models in the Prisma schema and the first migration
+- Habit creation form and server action / API route
+- Heatmap visualisation
+- Any data at `/habits` beyond a placeholder message
+
+## Planned stack
 
 - Next.js App Router, React, TypeScript, and Tailwind CSS
 - Better Auth
 - PostgreSQL and Prisma
 - Zod validation
 
+## Repository structure
+
+```text
+src/
+  app/              # Route files and page-specific UI
+    api/auth/       # Better Auth catch-all handler
+    habits/         # Protected habits dashboard
+    login/          # Login page and form component
+    register/       # Registration page and form component
+  generated/prisma/ # Prisma-generated client (do not edit by hand)
+  lib/
+    auth.ts         # Server-only Better Auth configuration
+    auth-client.ts  # Client-side Better Auth helper
+    prisma.ts       # Singleton Prisma client
+prisma/
+  schema.prisma     # Prisma schema (no app models yet)
+```
+
 ## Prerequisites
 
 - Node.js 20.9 or later (Node 24 is recommended by current Prisma guidance)
 - npm
-- PostgreSQL, once Prisma is initialized in the next setup step
+- A PostgreSQL database (local or a hosted Prisma Postgres instance)
 
 ## Local setup
 
@@ -36,16 +79,28 @@ Planned stack:
    Copy-Item .env.example .env
    ```
 
-3. Fill `DATABASE_URL` with your local PostgreSQL connection string and set a
-   unique `BETTER_AUTH_SECRET`. Never commit `.env`.
+3. Fill in the required environment variables (see table below). Never commit
+   `.env`.
 
-4. Start the application:
+4. Generate the Prisma client:
+
+   ```powershell
+   npx prisma generate
+   ```
+
+5. Push the Better Auth schema to the database:
+
+   ```powershell
+   npx prisma migrate dev --name init
+   ```
+
+6. Start the development server:
 
    ```powershell
    npm run dev
    ```
 
-5. Open http://localhost:3000.
+7. Open http://localhost:3000.
 
 On systems that block the PowerShell `npm.ps1` script, use `npm.cmd` and
 `npx.cmd` instead, for example `npm.cmd run dev`.
@@ -67,24 +122,12 @@ separate required check.
 
 | Variable | Purpose | Required locally | Safe for browser? |
 | --- | --- | --- | --- |
-| `DATABASE_URL` | Server-only PostgreSQL connection string. | Yes, once the database is configured. | No |
-| `BETTER_AUTH_SECRET` | Signs/protects authentication data. | Yes, once auth is configured. | No |
-| `BETTER_AUTH_URL` | Local/deployed application origin used by Better Auth. | Yes, once auth is configured. | No |
+| `DATABASE_URL` | Server-only PostgreSQL connection string. | Yes | No |
+| `BETTER_AUTH_SECRET` | Signs/protects authentication data. | Yes | No |
+| `BETTER_AUTH_URL` | Local/deployed application origin used by Better Auth. | Yes | No |
 
 Variables without the `NEXT_PUBLIC_` prefix remain server-only in Next.js. No
 secret belongs in a `NEXT_PUBLIC_` variable.
-
-## Planned repository structure
-
-```text
-src/
-  app/          # Route files and page-specific UI
-  lib/          # Server-only Prisma/auth helpers and validation
-prisma/         # Prisma schema and database migrations
-```
-
-We will add folders only when a milestone requires them. This keeps the early
-project easy to navigate.
 
 ## Database migration policy
 
