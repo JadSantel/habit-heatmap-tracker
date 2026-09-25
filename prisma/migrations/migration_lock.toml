@@ -1,0 +1,3 @@
+# Prisma Migrate lockfile
+# This file exists to track the lock state of database migrations.
+provider = "postgresql"

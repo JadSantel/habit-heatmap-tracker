@@ -45,8 +45,8 @@ MVP requirement makes the existing stack incapable of solving it.
 | 1 | Project setup (Next.js, TS, Tailwind, Prisma, env) | Complete |
 | 2a | Authentication — email/password, protected routes | Complete |
 | 2b | Authentication — Google & GitHub OAuth | Complete |
-| 3 | Core database entities — Habit model, migrations | Next |
-| 4 | Habit creation form and server action | Not started |
+| 3 | Core database entities — Habit model, migrations | Complete |
+| 4 | Habit creation form and server action | Next |
 | 5 | Heatmap visualisation | Not started |
 | 6 | Update / delete habits | Not started |
 | 7 | Validation and authorization hardening | Not started |

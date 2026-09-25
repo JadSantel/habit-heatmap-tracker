@@ -294,9 +294,10 @@ Registration, login, logout, protected route, session validation.
 **Understand before implementing:** How Better Auth social providers work; how to configure OAuth apps in Google Cloud Console and GitHub Developer Settings.
 **Definition of done:** User can sign in with Google or GitHub and land on `/habits`.
 
-### Milestone 3 — Habit Data Model 🔲 Next
+### Milestone 3 — Habit Data Model ✅ Complete
 **Objective:** Define the Habit and HabitEntry models and create the first migration.
-**Files affected:** `prisma/schema.prisma`, Server Actions, migration files.
+**Files affected:** `prisma/schema.prisma`, migration files.
+**Current status:** The schema and migration are in place, and the live database is currently up to date.
 **Definition of done:** `prisma migrate dev` succeeds; Habit and HabitEntry tables exist in the database.
 
 ### Milestone 4 — Habit Creation
@@ -354,3 +355,4 @@ When these are proposed, evaluate as: Required for MVP? | Useful but can wait | 
 | 4 | Defer OAuth to Milestone 2b | Email/password is sufficient for early users; OAuth adds env var and third-party setup complexity | Implement OAuth in Milestone 2a | OAuth must be added before significant user growth; no schema changes needed to add it later |
 | 5 | Use Server Actions for forms | Removes need for a separate API layer; simplest approach for MVP | REST API routes, tRPC | Forms must use progressive enhancement patterns; error handling via returned objects |
 | 6 | One log entry per habit per day (upsert) | Simplest model for a daily habit; prevents duplicate data | Allow multiple entries per day and aggregate | Business Rule BR-02; requires unique constraint on (habitId, date) |
+| 7 | Use a single Prisma schema for Better Auth plus Habit domain models | Better Auth expects core auth tables, and the habit tracker needs a user-owned Habit/HabitEntry hierarchy | Keeping auth and app models in separate databases or hand-written SQL | Must keep the schema aligned with Better Auth conventions and the Milestone 3 migration |

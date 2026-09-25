@@ -6,9 +6,10 @@ see recent consistency immediately.
 
 ## Current status
 
-The application foundation and authentication layer are in place. A user can
-register, log in, and reach a protected `/habits` dashboard. Habit creation and
-the heatmap view have not been built yet.
+The project foundation, auth flow, and the Milestone 3 database schema are in
+place. Users can register, log in, and reach a protected `/habits` dashboard,
+and the Prisma schema now includes the Better Auth tables plus the application
+`Habit` and `HabitEntry` models needed for the habit tracker.
 
 ### What is implemented
 
@@ -22,17 +23,19 @@ the heatmap view have not been built yet.
     `/login`, displays the signed-in user's name and a sign-out button
   - `/api/auth/[...all]` — Better Auth catch-all API route
 - **Prisma** — client v7 configured with the `pg` driver adapter; output
-  directed to `src/generated/prisma`. No application models have been added to
-  the schema yet (Better Auth will generate its own tables).
+  directed to `src/generated/prisma`. The schema includes Better Auth models,
+  `HabitType`, `Habit`, and `HabitEntry` with a unique `(habitId, date)` constraint.
+- **Migrations** — the Milestone 3 migration is present under
+  `prisma/migrations` and the database is reported as up to date.
 - **Stack wired up** — Next.js 16 App Router, React 19, TypeScript 5,
   Tailwind CSS 4, Zod 4, `pg` 8.
 
 ### What is not yet implemented
 
-- Habit models in the Prisma schema and the first migration
 - Habit creation form and server action / API route
-- Heatmap visualisation
-- Any data at `/habits` beyond a placeholder message
+- Habit logging and heatmap display
+- Edit and delete habit flows
+- Validation and authorization hardening beyond the basic auth route checks
 
 ## Planned stack
 
@@ -56,7 +59,8 @@ src/
     auth-client.ts  # Client-side Better Auth helper
     prisma.ts       # Singleton Prisma client
 prisma/
-  schema.prisma     # Prisma schema (no app models yet)
+  schema.prisma     # Prisma schema with Better Auth + habit data models
+  migrations/       # Committed migration history
 ```
 
 ## Prerequisites
@@ -88,10 +92,10 @@ prisma/
    npx prisma generate
    ```
 
-5. Push the Better Auth schema to the database:
+5. Apply the committed Prisma migrations to the database:
 
    ```powershell
-   npx prisma migrate dev --name init
+   npx prisma migrate dev
    ```
 
 6. Start the development server:
