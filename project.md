@@ -1,4 +1,4 @@
-﻿# Habit Heatmap — Product Blueprint
+# Habit Heatmap — Product Blueprint
 
 This is the living product document for the Habit Heatmap project.
 All major decisions, requirements, and scope definitions live here.
@@ -287,14 +287,14 @@ Next.js, TypeScript, Tailwind, Prisma v7, Better Auth wired up, env vars documen
 ### Milestone 2a — Authentication (Email/Password) ✅ Complete
 Registration, login, logout, protected route, session validation.
 
-### Milestone 2b — Authentication (OAuth) 🔲 Next
+### Milestone 2b — Authentication (OAuth) ✅ Complete
 **Objective:** Add Google and GitHub sign-in as alternatives to email/password.
 **Features:** Better Auth social providers (Google, GitHub OAuth).
 **Files affected:** `src/lib/auth.ts`, login/register pages, env vars.
 **Understand before implementing:** How Better Auth social providers work; how to configure OAuth apps in Google Cloud Console and GitHub Developer Settings.
 **Definition of done:** User can sign in with Google or GitHub and land on `/habits`.
 
-### Milestone 3 — Habit Data Model
+### Milestone 3 — Habit Data Model 🔲 Next
 **Objective:** Define the Habit and HabitEntry models and create the first migration.
 **Files affected:** `prisma/schema.prisma`, Server Actions, migration files.
 **Definition of done:** `prisma migrate dev` succeeds; Habit and HabitEntry tables exist in the database.

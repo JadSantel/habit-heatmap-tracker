@@ -1,4 +1,4 @@
-﻿# Habit Heatmap — AI Assistant Instructions
+# Habit Heatmap — AI Assistant Instructions
 
 This file is the authoritative instruction set for any AI coding assistant working on this project.
 Read it fully before writing any code, suggesting any feature, or making any architectural decision.
@@ -44,8 +44,8 @@ MVP requirement makes the existing stack incapable of solving it.
 |---|-----------|--------|
 | 1 | Project setup (Next.js, TS, Tailwind, Prisma, env) | Complete |
 | 2a | Authentication — email/password, protected routes | Complete |
-| 2b | Authentication — Google & GitHub OAuth | Deferred (next) |
-| 3 | Core database entities — Habit model, migrations | Not started |
+| 2b | Authentication — Google & GitHub OAuth | Complete |
+| 3 | Core database entities — Habit model, migrations | Next |
 | 4 | Habit creation form and server action | Not started |
 | 5 | Heatmap visualisation | Not started |
 | 6 | Update / delete habits | Not started |

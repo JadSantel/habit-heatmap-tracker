@@ -12,7 +12,7 @@ the heatmap view have not been built yet.
 
 ### What is implemented
 
-- **Auth** — email/password registration and login via Better Auth with the
+- **Auth** — email/password and OAuth (Google, GitHub) registration and login via Better Auth with the
   Prisma adapter. Sessions are validated server-side on each protected route.
 - **Routes**
   - `/` — public landing page
@@ -125,6 +125,10 @@ separate required check.
 | `DATABASE_URL` | Server-only PostgreSQL connection string. | Yes | No |
 | `BETTER_AUTH_SECRET` | Signs/protects authentication data. | Yes | No |
 | `BETTER_AUTH_URL` | Local/deployed application origin used by Better Auth. | Yes | No |
+| `GITHUB_CLIENT_ID` | GitHub OAuth client ID. | Yes | No |
+| `GITHUB_CLIENT_SECRET`| GitHub OAuth client secret. | Yes | No |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID. | Yes | No |
+| `GOOGLE_CLIENT_SECRET`| Google OAuth client secret. | Yes | No |
 
 Variables without the `NEXT_PUBLIC_` prefix remain server-only in Next.js. No
 secret belongs in a `NEXT_PUBLIC_` variable.
