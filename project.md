@@ -16,16 +16,18 @@ visible at a glance and keep the friction of logging as low as possible.
 
 ## Current Implementation Snapshot
 
-As of 2026-09-25, the project includes the product foundation, Better Auth setup, Prisma schema,
-and the Habit creation workflow. The app currently supports:
+As of 2026-09-26, the project includes the product foundation, Better Auth setup, Prisma schema,
+the Habit creation workflow, and the daily logging + heatmap experience. The app currently supports:
 
 - Email/password registration and login
 - Protected `/habits` dashboard access with server-side session checks
 - `Habit` and `HabitEntry` database models with Prisma migrations
 - Creating a new habit with name, type, and optional unit validation
+- Logging entries for today for boolean and measurable habits
+- A 365-day heatmap view that updates immediately based on logged entries
 - Basic validation tests around `createHabitSchema`
 
-The next milestone is the daily logging + heatmap experience, which is still outstanding.
+The next milestone is update/delete habit functionality, followed by validation hardening and UI polish.
 
 ---
 

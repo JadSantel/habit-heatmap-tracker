@@ -47,14 +47,14 @@ MVP requirement makes the existing stack incapable of solving it.
 | 2b | Authentication — Google & GitHub OAuth | Complete |
 | 3 | Core database entities — Habit model, migrations | Complete |
 | 4 | Habit creation form and server action | Complete |
-| 5 | Heatmap visualisation and daily habit logging | Next |
+| 5 | Heatmap visualisation and daily habit logging | Complete |
 | 6 | Update / delete habits | Not started |
 | 7 | Validation and authorization hardening | Not started |
 | 8 | UI polish | Not started |
 | 9 | Testing | In progress |
 | 10 | Deployment | Not started |
 
-The project is currently between Milestone 4 and Milestone 5: users can create habits, but the daily logging and heatmap flow is still pending. Do not skip milestones or implement later features before the core logging experience is in place.
+The project has completed the core habit creation and daily logging/heatmap flow. The next milestone is update/delete functionality, followed by validation hardening, UI polish, and deployment work.
 
 ---
 
