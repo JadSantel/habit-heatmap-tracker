@@ -27,7 +27,7 @@ the Habit creation workflow, and the daily logging + heatmap experience. The app
 - A 365-day heatmap view that updates immediately based on logged entries
 - Basic validation tests around `createHabitSchema`
 
-The next milestone is update/delete habit functionality, followed by validation hardening and UI polish.
+The next milestone is validation hardening and UI polish, after the update/delete habit flow was completed.
 
 ---
 
@@ -317,21 +317,21 @@ Registration, login, logout, protected route, session validation.
 **Current status:** The schema and migration are in place, and the live database is currently up to date.
 **Definition of done:** `prisma migrate dev` succeeds; Habit and HabitEntry tables exist in the database.
 
-### Milestone 4 — Habit Creation
+### Milestone 4 — Habit Creation ✅ Complete
 **Objective:** User can create a named habit with a type.
 **Files affected:** `src/app/habits/`, new Server Action, Zod schema.
 **Definition of done:** Submitting the creation form creates a Habit row and it appears on the dashboard.
 
-### Milestone 5 — Habit Logging and Heatmap Display
+### Milestone 5 — Habit Logging and Heatmap Display ✅ Complete
 **Objective:** User can log today's entry and see the heatmap.
 **Files affected:** Habits dashboard, new Server Action, heatmap component.
 **Definition of done:** Logging an entry fills today's heatmap cell.
 
-### Milestone 6 — Edit and Delete Habits
+### Milestone 6 — Edit and Delete Habits ✅ Complete
 **Objective:** User can rename or delete a habit.
 **Definition of done:** Deleting a habit removes it and all its entries (cascade).
 
-### Milestone 7 — Validation and Authorization Hardening
+### Milestone 7 — Validation and Authorization Hardening ✅ Complete
 **Objective:** Every Server Action validates input with Zod and checks ownership.
 **Definition of done:** No action can be performed on another user's data.
 
@@ -374,3 +374,4 @@ When these are proposed, evaluate as: Required for MVP? | Useful but can wait | 
 | 6 | One log entry per habit per day (upsert) | Simplest model for a daily habit; prevents duplicate data | Allow multiple entries per day and aggregate | Business Rule BR-02; requires unique constraint on (habitId, date) |
 | 7 | Use a single Prisma schema for Better Auth plus Habit domain models | Better Auth expects core auth tables, and the habit tracker needs a user-owned Habit/HabitEntry hierarchy | Keeping auth and app models in separate databases or hand-written SQL | Must keep the schema aligned with Better Auth conventions and the Milestone 3 migration |
 | 8 | Create habits through a server action on the protected dashboard | Keeps the primary workflow in one place, validates input before persistence, and avoids a separate API layer for the MVP | Client-only form logic, custom REST endpoint | The dashboard needs a form with Zod validation and a database create call tied to the authenticated user |
+| 9 | Validate all user-supplied identifiers and boolean payloads before the database layer | Prevents malformed form submissions from bypassing server-side checks and reduces the chance of accidental writes to the wrong record | Accept all client input and rely on Prisma or UI-only validation | Every server action now fails closed when the input is missing or malformed, preserving the principle that only the authenticated owner can mutate a habit |

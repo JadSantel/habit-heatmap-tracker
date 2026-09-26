@@ -2,7 +2,9 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { DeleteHabitButton } from "./delete-habit-button";
 import { HabitCreationForm } from "./habit-form";
+import { HabitEditForm } from "./habit-edit-form";
 import { HabitLogForm } from "./habit-log-form";
 import { SignOutButton } from "./sign-out-button";
 
@@ -123,6 +125,18 @@ export default async function HabitsPage() {
                   <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">
                     {habit.type}
                   </span>
+                </div>
+
+                <div className="mt-4 flex items-center justify-end gap-2">
+                  <HabitEditForm habit={habit} />
+                  <form action={async (formData: FormData) => {
+                    "use server";
+                    const { deleteHabit } = await import("./create-habit-action");
+                    await deleteHabit(formData);
+                  }}>
+                    <input type="hidden" name="habitId" value={habit.id} />
+                    <DeleteHabitButton habitId={habit.id} />
+                  </form>
                 </div>
 
                 <HabitHeatmap habit={habit} />

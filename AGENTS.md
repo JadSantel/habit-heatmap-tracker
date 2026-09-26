@@ -48,8 +48,8 @@ MVP requirement makes the existing stack incapable of solving it.
 | 3 | Core database entities — Habit model, migrations | Complete |
 | 4 | Habit creation form and server action | Complete |
 | 5 | Heatmap visualisation and daily habit logging | Complete |
-| 6 | Update / delete habits | Not started |
-| 7 | Validation and authorization hardening | Not started |
+| 6 | Update / delete habits | Complete |
+| 7 | Validation and authorization hardening | Complete |
 | 8 | UI polish | Not started |
 | 9 | Testing | In progress |
 | 10 | Deployment | Not started |

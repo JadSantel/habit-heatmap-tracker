@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { createHabitSchema } from "./habit-form-shared";
+import { createHabitSchema, deleteHabitSchema, updateHabitSchema } from "./habit-form-shared";
 import { logHabitEntrySchema } from "./habit-log-shared";
 
 describe("createHabitSchema", () => {
@@ -39,6 +39,35 @@ describe("createHabitSchema", () => {
   });
 });
 
+describe("updateHabitSchema", () => {
+  it("accepts a valid habit rename and preserves trimmed values", () => {
+    const result = updateHabitSchema.parse({
+      habitId: "habit_123",
+      name: "  Morning run  ",
+      type: "BOOLEAN",
+      unit: "  ",
+    });
+
+    assert.deepEqual(result, {
+      habitId: "habit_123",
+      name: "Morning run",
+      type: "BOOLEAN",
+      unit: null,
+    });
+  });
+
+  it("requires a unit for measurable habits during updates", () => {
+    assert.throws(() =>
+      updateHabitSchema.parse({
+        habitId: "habit_123",
+        name: "Read",
+        type: "MEASURABLE",
+        unit: "   ",
+      }),
+    );
+  });
+});
+
 describe("logHabitEntrySchema", () => {
   it("accepts a boolean habit entry for today", () => {
     const result = logHabitEntrySchema.parse({
@@ -50,6 +79,15 @@ describe("logHabitEntrySchema", () => {
       habitId: "habit_123",
       value: true,
     });
+  });
+
+  it("rejects a false boolean value before it reaches the database", () => {
+    assert.throws(() =>
+      logHabitEntrySchema.parse({
+        habitId: "habit_123",
+        value: "false",
+      }),
+    );
   });
 
   it("accepts a measurable habit value above zero", () => {
@@ -71,5 +109,11 @@ describe("logHabitEntrySchema", () => {
         value: "0",
       }),
     );
+  });
+});
+
+describe("deleteHabitSchema", () => {
+  it("requires a non-empty habit identifier", () => {
+    assert.throws(() => deleteHabitSchema.parse({ habitId: "   " }));
   });
 });
