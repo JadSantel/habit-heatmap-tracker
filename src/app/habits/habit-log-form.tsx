@@ -1,11 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  initialHabitLogState,
-  logHabitEntry,
-  type HabitLogActionState,
-} from "./log-habit-action";
+import { initialHabitLogState, type HabitLogActionState } from "./habit-log-shared";
+import { logHabitEntry } from "./log-habit-action";
 
 type HabitSummary = {
   id: string;

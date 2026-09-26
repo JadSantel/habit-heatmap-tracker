@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { createHabitSchema } from "./create-habit-action";
-import { logHabitEntrySchema } from "./log-habit-action";
+import { createHabitSchema } from "./habit-form-shared";
+import { logHabitEntrySchema } from "./habit-log-shared";
 
 describe("createHabitSchema", () => {
   it("accepts a valid boolean habit", () => {
