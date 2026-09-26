@@ -3,7 +3,58 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { HabitCreationForm } from "./habit-form";
+import { HabitLogForm } from "./habit-log-form";
 import { SignOutButton } from "./sign-out-button";
+
+const HEATMAP_DAYS = 365;
+
+function getUtcDateKey(date: Date) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())).toISOString().slice(0, 10);
+}
+
+function HabitHeatmap({ habit }: { habit: { id: string; type: "BOOLEAN" | "MEASURABLE"; unit: string | null; entries: Array<{ date: Date; value: number | null }> } }) {
+  const today = new Date();
+  const startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - (HEATMAP_DAYS - 1)));
+  const entriesByDate = new Map(
+    habit.entries.map((entry) => [getUtcDateKey(new Date(entry.date)), entry]),
+  );
+
+  const measurableValues = habit.entries
+    .map((entry) => entry.value)
+    .filter((value): value is number => typeof value === "number" && value > 0);
+  const maxValue = measurableValues.length > 0 ? Math.max(...measurableValues) : 1;
+
+  return (
+    <div className="mt-5 grid grid-cols-7 gap-1.5" aria-label={`${habit.type === "BOOLEAN" ? "Boolean" : "Measurable"} habit heatmap`}>
+      {Array.from({ length: HEATMAP_DAYS }).map((_, index) => {
+        const date = new Date(startDate);
+        date.setUTCDate(startDate.getUTCDate() + index);
+        const key = getUtcDateKey(date);
+        const entry = entriesByDate.get(key);
+        const isToday = key === getUtcDateKey(today);
+
+        const baseClass = "h-3 rounded-sm border border-zinc-200";
+        const booleanClass = entry ? "bg-emerald-500" : "bg-zinc-100";
+        const measurableOpacity = typeof entry?.value === "number" && entry.value > 0 ? Math.min(1, 0.4 + (entry.value / maxValue) * 0.6) : 0;
+        const measurableClass = entry && typeof entry.value === "number" && entry.value > 0 ? "border-emerald-600" : "bg-zinc-100";
+
+        return (
+          <div
+            key={`${habit.id}-${key}`}
+            aria-label={`${key}: ${entry ? (habit.type === "BOOLEAN" ? "Logged" : `${entry.value ?? 0} ${habit.unit ?? "units"}`) : "No entry"}`}
+            title={entry ? (habit.type === "BOOLEAN" ? "Logged today" : `${entry.value ?? 0} ${habit.unit ?? "units"}`) : "No entry"}
+            className={`${baseClass} ${habit.type === "BOOLEAN" ? booleanClass : measurableClass} ${isToday ? "ring-1 ring-emerald-700" : ""}`}
+            style={
+              habit.type === "MEASURABLE" && typeof entry?.value === "number" && entry.value > 0
+                ? { backgroundColor: `rgba(16, 185, 129, ${measurableOpacity})` }
+                : undefined
+            }
+          />
+        );
+      })}
+    </div>
+  );
+}
 
 export default async function HabitsPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -12,9 +63,22 @@ export default async function HabitsPage() {
     redirect("/login");
   }
 
+  const today = new Date();
+  const startDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - (HEATMAP_DAYS - 1)));
+
   const habits = await prisma.habit.findMany({
     where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
+    include: {
+      entries: {
+        where: {
+          date: {
+            gte: startDate,
+          },
+        },
+        orderBy: { date: "asc" },
+      },
+    },
   });
 
   return (
@@ -61,14 +125,8 @@ export default async function HabitsPage() {
                   </span>
                 </div>
 
-                <div className="mt-5 grid grid-cols-7 gap-1.5">
-                  {Array.from({ length: 35 }).map((_, index) => (
-                    <div
-                      key={`${habit.id}-${index}`}
-                      className="h-3 rounded-sm border border-zinc-200 bg-zinc-100"
-                    />
-                  ))}
-                </div>
+                <HabitHeatmap habit={habit} />
+                <HabitLogForm habit={habit} />
               </article>
             ))}
           </div>

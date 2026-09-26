@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { createHabitSchema } from "./create-habit-action";
+import { logHabitEntrySchema } from "./log-habit-action";
 
 describe("createHabitSchema", () => {
   it("accepts a valid boolean habit", () => {
@@ -33,6 +34,41 @@ describe("createHabitSchema", () => {
         name: "x".repeat(101),
         type: "BOOLEAN",
         unit: "",
+      }),
+    );
+  });
+});
+
+describe("logHabitEntrySchema", () => {
+  it("accepts a boolean habit entry for today", () => {
+    const result = logHabitEntrySchema.parse({
+      habitId: "habit_123",
+      value: "true",
+    });
+
+    assert.deepEqual(result, {
+      habitId: "habit_123",
+      value: true,
+    });
+  });
+
+  it("accepts a measurable habit value above zero", () => {
+    const result = logHabitEntrySchema.parse({
+      habitId: "habit_123",
+      value: "15.5",
+    });
+
+    assert.deepEqual(result, {
+      habitId: "habit_123",
+      value: 15.5,
+    });
+  });
+
+  it("rejects measurable values that are zero or negative", () => {
+    assert.throws(() =>
+      logHabitEntrySchema.parse({
+        habitId: "habit_123",
+        value: "0",
       }),
     );
   });

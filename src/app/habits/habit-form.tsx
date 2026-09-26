@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { createHabit, initialHabitState, type HabitActionState } from "./create-habit-action";
+import { createHabit } from "./create-habit-action";
+import { initialHabitState, type HabitActionState } from "./habit-form-shared";
 
 const typeOptions = [
   { label: "Yes / No", value: "BOOLEAN" },
@@ -13,6 +14,8 @@ export function HabitCreationForm() {
     createHabit as (prevState: HabitActionState | null, formData: FormData) => Promise<HabitActionState>,
     initialHabitState,
   );
+
+  console.log("HabitCreationForm state:", state);
 
   return (
     <section className="mt-8 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">

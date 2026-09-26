@@ -46,15 +46,15 @@ MVP requirement makes the existing stack incapable of solving it.
 | 2a | Authentication — email/password, protected routes | Complete |
 | 2b | Authentication — Google & GitHub OAuth | Complete |
 | 3 | Core database entities — Habit model, migrations | Complete |
-| 4 | Habit creation form and server action | Next |
-| 5 | Heatmap visualisation | Not started |
+| 4 | Habit creation form and server action | Complete |
+| 5 | Heatmap visualisation and daily habit logging | Next |
 | 6 | Update / delete habits | Not started |
 | 7 | Validation and authorization hardening | Not started |
 | 8 | UI polish | Not started |
-| 9 | Testing | Not started |
+| 9 | Testing | In progress |
 | 10 | Deployment | Not started |
 
-**Do not skip milestones or implement features from a later milestone while an earlier one is incomplete.**
+The project is currently between Milestone 4 and Milestone 5: users can create habits, but the daily logging and heatmap flow is still pending. Do not skip milestones or implement later features before the core logging experience is in place.
 
 ---
 
@@ -124,20 +124,25 @@ see their consistency through a heatmap. Every implementation decision should su
 ```
 src/
   app/
-    api/auth/         Better Auth catch-all handler
-    habits/           Protected habits dashboard (primary page)
-    login/            Login page + LoginForm client component
-    register/         Registration page + RegisterForm client component
+    api/auth/                 Better Auth catch-all handler
+    habits/
+      create-habit-action.ts  Server action with Zod validation and Prisma create logic
+      habit-form.tsx          Habit creation form
+      create-habit.test.ts     Schema validation tests
+      page.tsx                Protected habits dashboard
+    login/                    Login page + LoginForm client component
+    register/                 Registration page + RegisterForm client component
   lib/
-    auth.ts           Server-only Better Auth config (NEVER import in client components)
-    auth-client.ts    Client-side Better Auth helper
-    prisma.ts         Singleton Prisma client (server-only)
-  generated/prisma/   Prisma-generated client — DO NOT edit by hand
+    auth.ts                   Server-only Better Auth config (NEVER import in client components)
+    auth-client.ts            Client-side Better Auth helper
+    prisma.ts                 Singleton Prisma client (server-only)
+  generated/prisma/           Prisma-generated client — DO NOT edit by hand
 prisma/
-  schema.prisma       Source of truth for all data models
-AGENTS.md             This file
-project.md            Product blueprint and decision log
-README.md             Setup and operational instructions
+  schema.prisma               Source of truth for all data models
+  migrations/                 Committed migration history
+AGENTS.md                     This file
+project.md                    Product blueprint and decision log
+README.md                     Setup and operational instructions
 ```
 
 ---
@@ -151,3 +156,13 @@ README.md             Setup and operational instructions
 5. Am I using the simplest approach that satisfies the requirement?
 
 If any answer is "no" or "unsure," stop and clarify with the user before proceeding.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

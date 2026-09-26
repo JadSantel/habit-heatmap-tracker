@@ -28,6 +28,8 @@ model User {
   sessions      Session[]
   accounts      Account[]
   habits        Habit[]
+
+  @@map("user")
 }
 
 model Session {
@@ -40,25 +42,30 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
 }
 
 model Account {
-  id                       String    @id @default(cuid())
-  accountId                String
-  providerId               String
-  userId                   String
-  user                     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken              String?
-  refreshToken             String?
-  idToken                  String?
-  accessTokenExpiresAt     DateTime?
-  refreshTokenExpiresAt    DateTime?
-  scope                    String?
-  passwordHash             String?
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
 }
 
 model Verification {
@@ -68,17 +75,20 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
 
 model Habit {
-  id        String      @id @default(cuid())
+  id        String       @id @default(cuid())
   userId    String
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name      String      @db.VarChar(100)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String       @db.VarChar(100)
   type      HabitType
   unit      String?
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
   entries   HabitEntry[]
 
   @@index([userId, createdAt])

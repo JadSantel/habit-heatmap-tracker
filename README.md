@@ -6,36 +6,29 @@ see recent consistency immediately.
 
 ## Current status
 
-The project foundation, auth flow, and the Milestone 3 database schema are in
-place. Users can register, log in, and reach a protected `/habits` dashboard,
-and the Prisma schema now includes the Better Auth tables plus the application
-`Habit` and `HabitEntry` models needed for the habit tracker.
+The project foundation, auth flow, Prisma schema, and the Milestone 4 habit-creation workflow are all in place. Users can register, sign in, and create their own habits from the protected `/habits` dashboard. The next major milestone is the daily logging and heatmap visualization flow.
 
 ### What is implemented
 
-- **Auth** — email/password and OAuth (Google, GitHub) registration and login via Better Auth with the
-  Prisma adapter. Sessions are validated server-side on each protected route.
+- **Auth** — email/password and OAuth (Google, GitHub) registration and login via Better Auth with the Prisma adapter. Sessions are validated server-side on each protected route.
 - **Routes**
   - `/` — public landing page
   - `/login` — login form (`LoginForm` client component)
   - `/register` — registration form (`RegisterForm` client component)
-  - `/habits` — protected dashboard; redirects unauthenticated visitors to
-    `/login`, displays the signed-in user's name and a sign-out button
+  - `/habits` — protected dashboard; redirects unauthenticated visitors to `/login` and shows the signed-in user context
   - `/api/auth/[...all]` — Better Auth catch-all API route
-- **Prisma** — client v7 configured with the `pg` driver adapter; output
-  directed to `src/generated/prisma`. The schema includes Better Auth models,
-  `HabitType`, `Habit`, and `HabitEntry` with a unique `(habitId, date)` constraint.
-- **Migrations** — the Milestone 3 migration is present under
-  `prisma/migrations` and the database is reported as up to date.
-- **Stack wired up** — Next.js 16 App Router, React 19, TypeScript 5,
-  Tailwind CSS 4, Zod 4, `pg` 8.
+- **Prisma** — Prisma client v7 is configured with the `pg` driver adapter and output is written to `src/generated/prisma`. The schema includes Better Auth models, `HabitType`, `Habit`, and `HabitEntry` with a unique `(habitId, date)` constraint.
+- **Habit creation** — a `HabitCreationForm` client component submits to a server action that validates name/type/unit values with Zod, verifies the authenticated session, and creates a new habit for the current user.
+- **Testing** — a basic validation test file exists for `createHabitSchema` in `src/app/habits/create-habit.test.ts`.
+- **Stack wired up** — Next.js 16 App Router, React 19, TypeScript 5, Tailwind CSS 4, Zod 4, `pg` 8.
 
 ### What is not yet implemented
 
-- Habit creation form and server action / API route
-- Habit logging and heatmap display
+- Habit logging for the current day
+- Heatmap display for historical consistency
 - Edit and delete habit flows
-- Validation and authorization hardening beyond the basic auth route checks
+- Broader validation and authorization hardening beyond the current auth and creation checks
+- UI polish and deployment configuration
 
 ## Planned stack
 
@@ -48,19 +41,23 @@ and the Prisma schema now includes the Better Auth tables plus the application
 
 ```text
 src/
-  app/              # Route files and page-specific UI
-    api/auth/       # Better Auth catch-all handler
-    habits/         # Protected habits dashboard
-    login/          # Login page and form component
-    register/       # Registration page and form component
-  generated/prisma/ # Prisma-generated client (do not edit by hand)
+  app/
+    api/auth/                 # Better Auth catch-all handler
+    habits/
+      create-habit-action.ts  # Server action with validation and Prisma create logic
+      habit-form.tsx          # Habit creation form UI
+      create-habit.test.ts    # Schema validation tests
+      page.tsx               # Protected habits dashboard
+    login/                    # Login page and form component
+    register/                 # Registration page and form component
+  generated/prisma/          # Prisma-generated client (do not edit by hand)
   lib/
-    auth.ts         # Server-only Better Auth configuration
-    auth-client.ts  # Client-side Better Auth helper
-    prisma.ts       # Singleton Prisma client
+    auth.ts                  # Server-only Better Auth configuration
+    auth-client.ts           # Client-side Better Auth helper
+    prisma.ts                # Singleton Prisma client
 prisma/
-  schema.prisma     # Prisma schema with Better Auth + habit data models
-  migrations/       # Committed migration history
+  schema.prisma              # Prisma schema with Better Auth + habit data models
+  migrations/                # Committed migration history
 ```
 
 ## Prerequisites
