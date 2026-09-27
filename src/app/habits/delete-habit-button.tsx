@@ -2,7 +2,7 @@
 
 import { useFormStatus } from "react-dom";
 
-export function DeleteHabitButton({ habitId }: { habitId: string }) {
+export function DeleteHabitButton() {
   const { pending } = useFormStatus();
 
   return (

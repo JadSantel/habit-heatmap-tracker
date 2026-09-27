@@ -10,8 +10,11 @@ const schema = z.object({ name: z.string().trim().min(1, "Enter your name.").max
 
 export function RegisterForm() {
   const router = useRouter();
-  const [name, setName] = useState(""); const [email, setEmail] = useState(""); const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null); const [pending, setPending] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   const [socialPending, setSocialPending] = useState<"google" | "github" | null>(null);
 
   async function handleSocial(provider: "google" | "github") {
@@ -20,38 +23,75 @@ export function RegisterForm() {
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setError(null);
+    event.preventDefault();
+    setError(null);
     const parsed = schema.safeParse({ name, email: email.trim().toLowerCase(), password });
     if (!parsed.success) return setError(parsed.error.issues[0]?.message ?? "Check your details.");
     setPending(true);
     const { error: authError } = await authClient.signUp.email({ ...parsed.data, callbackURL: "/habits" });
     setPending(false);
     if (authError) return setError(authError.message ?? "Unable to create your account.");
-    router.replace("/habits"); router.refresh();
+    router.replace("/habits");
+    router.refresh();
   }
-  return <div className="mt-8">
-    <div className="flex flex-col gap-3">
-      <button onClick={() => handleSocial("google")} disabled={socialPending !== null || pending} type="button" className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 font-medium text-zinc-800 hover:bg-zinc-50 disabled:opacity-60">
-        {socialPending === "google" ? "Connecting…" : "Continue with Google"}
-      </button>
-      <button onClick={() => handleSocial("github")} disabled={socialPending !== null || pending} type="button" className="flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-950 px-4 py-2 font-medium text-white hover:bg-zinc-800 disabled:opacity-60">
-        {socialPending === "github" ? "Connecting…" : "Continue with GitHub"}
-      </button>
+
+  return (
+    <div className="mt-8">
+      <div className="flex flex-col gap-3">
+        <button
+          onClick={() => handleSocial("google")}
+          disabled={socialPending !== null || pending}
+          type="button"
+          className="flex w-full items-center justify-center gap-2 rounded-full border border-[color:var(--line)] bg-white px-4 py-2.5 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--brand)] hover:text-[color:var(--brand-strong)] disabled:opacity-60"
+        >
+          {socialPending === "google" ? "Connecting…" : "Continue with Google"}
+        </button>
+        <button
+          onClick={() => handleSocial("github")}
+          disabled={socialPending !== null || pending}
+          type="button"
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-[color:var(--brand)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(24,136,93,0.18)] transition hover:bg-[color:var(--brand-strong)] disabled:opacity-60"
+        >
+          {socialPending === "github" ? "Connecting…" : "Continue with GitHub"}
+        </button>
+      </div>
+
+      <div className="relative my-6 text-center text-sm text-[color:var(--muted)] before:absolute before:left-0 before:right-0 before:top-1/2 before:h-px before:bg-[color:var(--line)]">
+        <span className="relative bg-white px-3">Or continue with email</span>
+      </div>
+
+      <form className="space-y-5" onSubmit={submit} noValidate>
+        <Field label="Name" type="text" value={name} onChange={setName} autoComplete="name" />
+        <Field label="Email" type="email" value={email} onChange={setEmail} autoComplete="email" />
+        <Field label="Password" type="password" value={password} onChange={setPassword} autoComplete="new-password" hint="At least 8 characters." />
+        {error && <p className="text-sm text-red-700" role="alert">{error}</p>}
+        <button
+          className="w-full rounded-full bg-[color:var(--foreground)] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f201d] disabled:opacity-60"
+          disabled={pending || socialPending !== null}
+        >
+          {pending ? "Creating account…" : "Create account"}
+        </button>
+        <p className="text-center text-sm text-[color:var(--muted)]">
+          Already have an account? <Link className="font-semibold text-[color:var(--brand-strong)] underline-offset-2 hover:underline" href="/login">Sign in</Link>.
+        </p>
+      </form>
     </div>
-    <div className="relative mt-8 mb-6 text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:block after:border-t after:border-zinc-200">
-      <span className="relative z-10 bg-white px-2 text-zinc-500">Or continue with email</span>
-    </div>
-    <form className="space-y-5" onSubmit={submit} noValidate>
-      <Field label="Name" type="text" value={name} onChange={setName} autoComplete="name" />
-      <Field label="Email" type="email" value={email} onChange={setEmail} autoComplete="email" />
-      <Field label="Password" type="password" value={password} onChange={setPassword} autoComplete="new-password" hint="At least 8 characters." />
-      {error && <p className="text-sm text-red-700" role="alert">{error}</p>}
-      <button className="w-full rounded-lg bg-zinc-950 px-4 py-2 font-medium text-white disabled:opacity-60" disabled={pending || socialPending !== null}>{pending ? "Creating account…" : "Create account"}</button>
-      <p className="text-center text-sm text-zinc-600">Already have an account? <Link className="font-medium underline" href="/login">Sign in</Link>.</p>
-    </form>
-  </div>;
+  );
 }
 
 function Field({ label, type, value, onChange, autoComplete, hint }: { label: string; type: string; value: string; onChange: (value: string) => void; autoComplete: string; hint?: string }) {
-  return <label className="block text-sm font-medium text-zinc-800">{label}<input className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-950 outline-none focus:ring-2" type={type} value={value} onChange={(event) => onChange(event.target.value)} autoComplete={autoComplete} required />{hint && <span className="mt-1 block text-xs font-normal text-zinc-500">{hint}</span>}</label>;
+  return (
+    <label className="block text-sm font-medium text-[color:var(--foreground)]">
+      {label}
+      <input
+        className="mt-1.5 w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-3.5 py-2.5 text-zinc-950 outline-none transition focus:border-[color:var(--brand)] focus:bg-white focus:ring-4 focus:ring-[rgba(24,136,93,0.10)]"
+        type={type}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        autoComplete={autoComplete}
+        required
+      />
+      {hint && <span className="mt-1.5 block text-xs font-normal text-[color:var(--muted)]">{hint}</span>}
+    </label>
+  );
 }

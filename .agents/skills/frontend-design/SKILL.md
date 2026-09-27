@@ -8,6 +8,40 @@ license: Complete terms in LICENSE.txt
 
 Approach this as the design lead at a design studio known for giving every client a distinct visual identity that is not mistaken for anyone else's. This client has already rejected proposals that felt cliché or templated, and is paying for a distinctive point of view: make deliberate, opinionated choices about palette, typography, and layout that are specific to this brief, and take aesthetic risk if justified.
 
+## Habit Heatmap Context (Milestone 8: UI Polish)
+
+For the **Habit Heatmap** project, ground all design decisions in its specific context:
+- **Core Loop**: A mobile-friendly tracker where logging a habit takes under ten seconds.
+- **The Hero**: The GitHub-style contribution heatmap is the centerpiece. Make it visually prominent, satisfying to interact with, and clear.
+- **Tech Stack Constraints**: All styling must be implemented using Tailwind CSS. Define custom color palettes and typography in your Tailwind config.
+- **Aesthetic**: Utilitarian, fast, and premium. Snappy visual feedback (micro-animations) for logging habits, without unnecessary clutter.
+
+### Project-specific direction for Habit Heatmap
+
+The product should feel like a disciplined tool, not a lifestyle app or a generic SaaS dashboard. Favor:
+- a calm neutral backdrop with a warm off-white base and one confident green accent
+- generous spacing and low visual noise so the daily habit cycle stays obvious
+- strong hierarchy around the heatmap, the habit name, and the daily action button
+- rounded surfaces that feel modern and tactile, but still practical and compact on mobile
+- strong contrast between active and inactive cells, with today clearly highlighted for quick glanceability
+
+Avoid:
+- loud gradients, multiple accent colors, or large decorative shadows
+- excessive card chrome that competes with the heatmap itself
+- decorative labels or “AI” style visual filler that adds no product clarity
+- long complex forms or hidden actions that slow down the daily logging flow
+
+### Design tokens to use on this project
+
+- Background: warm ivory #F3EFE7 with pale green undertones
+- Primary accent: strong green #18885D
+- Dark text: deep slate #17231F
+- Muted text: soft grey-green #586763
+- Surfaces: white with subtle transparency and border contrast
+- Heatmap states: empty cells in soft green/ivory, filled cells in a confident green, today highlighted with a strong ring
+
+These choices reinforce the product goal: the habit tracker feels calm, dependable, and fast enough to keep the habit loop alive.
+
 ## Ground your designs in the subject matter
 
 If the brief does not identify what the product or subject matter is, identify it yourself before designing, and confirm with the client. You can come up with one concrete subject, the design's audience, and the design's primary job, as a proposal. If there's any information in your memory about the client's preferences or context about what they're building, use that as a hint. The subject's industry, subject matter, materials, and vernacular are where distinctive visual choices come from — a design for a toy for girls aged 8–11 will be very aesthetically different from a dashboard for financial analysts. Build with the brief's real content and subject matter throughout.

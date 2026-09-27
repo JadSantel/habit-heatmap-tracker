@@ -3,10 +3,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { DeleteHabitButton } from "./delete-habit-button";
-import { HabitCreationForm } from "./habit-form";
 import { HabitEditForm } from "./habit-edit-form";
 import { HabitLogForm } from "./habit-log-form";
-import { SignOutButton } from "./sign-out-button";
+import { HeaderActions } from "./header-actions";
 
 const HEATMAP_DAYS = 365;
 
@@ -26,34 +25,78 @@ function HabitHeatmap({ habit }: { habit: { id: string; type: "BOOLEAN" | "MEASU
     .filter((value): value is number => typeof value === "number" && value > 0);
   const maxValue = measurableValues.length > 0 ? Math.max(...measurableValues) : 1;
 
+  const monthLabels: string[] = [];
+  const monthCursor = new Date(startDate);
+
+  while (monthCursor <= today) {
+    monthLabels.push(
+      monthCursor.toLocaleDateString("en-US", {
+        month: "short",
+      }),
+    );
+    monthCursor.setUTCMonth(monthCursor.getUTCMonth() + 1, 1);
+  }
+
   return (
-    <div className="mt-5 grid grid-cols-7 gap-1.5" aria-label={`${habit.type === "BOOLEAN" ? "Boolean" : "Measurable"} habit heatmap`}>
-      {Array.from({ length: HEATMAP_DAYS }).map((_, index) => {
-        const date = new Date(startDate);
-        date.setUTCDate(startDate.getUTCDate() + index);
-        const key = getUtcDateKey(date);
-        const entry = entriesByDate.get(key);
-        const isToday = key === getUtcDateKey(today);
+    <div className="mt-6 w-full overflow-hidden px-2 pb-4 pt-1">
+      {/* Scrollable container — clips horizontally on mobile, natural on desktop */}
+      <div className="relative">
+        {/* Right-edge fade: swipe affordance on mobile, hidden on larger screens */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 rounded-r-xl sm:hidden"
+          style={{
+            background: "linear-gradient(to right, transparent, var(--panel-strong))",
+          }}
+          aria-hidden="true"
+        />
 
-        const baseClass = "h-3 rounded-sm border border-zinc-200";
-        const booleanClass = entry ? "bg-emerald-500" : "bg-zinc-100";
-        const measurableOpacity = typeof entry?.value === "number" && entry.value > 0 ? Math.min(1, 0.4 + (entry.value / maxValue) * 0.6) : 0;
-        const measurableClass = entry && typeof entry.value === "number" && entry.value > 0 ? "border-emerald-600" : "bg-zinc-100";
+        <div className="overflow-x-auto scrollbar-hide">
+          {/* Month labels — scroll in sync with the grid */}
+          <div className="mb-2 flex w-max gap-1 text-[9px] font-medium uppercase tracking-[0.18em] text-[color:var(--muted)] sm:mb-3">
+            {monthLabels.map((month, index) => (
+              <span
+                key={`${habit.id}-month-${month}-${index}`}
+                className="w-[calc((8px+2px)*4.33)] shrink-0 whitespace-nowrap sm:w-[calc((10px+3px)*4.33)] md:w-[calc((12px+3px)*4.33)] lg:w-[calc((14px+3px)*4.33)]"
+              >
+                {month}
+              </span>
+            ))}
+          </div>
 
-        return (
           <div
-            key={`${habit.id}-${key}`}
-            aria-label={`${key}: ${entry ? (habit.type === "BOOLEAN" ? "Logged" : `${entry.value ?? 0} ${habit.unit ?? "units"}`) : "No entry"}`}
-            title={entry ? (habit.type === "BOOLEAN" ? "Logged today" : `${entry.value ?? 0} ${habit.unit ?? "units"}`) : "No entry"}
-            className={`${baseClass} ${habit.type === "BOOLEAN" ? booleanClass : measurableClass} ${isToday ? "ring-1 ring-emerald-700" : ""}`}
-            style={
-              habit.type === "MEASURABLE" && typeof entry?.value === "number" && entry.value > 0
-                ? { backgroundColor: `rgba(16, 185, 129, ${measurableOpacity})` }
-                : undefined
-            }
-          />
-        );
-      })}
+            className="grid w-max grid-flow-col grid-rows-7 gap-[2px] sm:gap-[3px]"
+            aria-label={`${habit.type === "BOOLEAN" ? "Boolean" : "Measurable"} habit heatmap`}
+            dir="ltr"
+          >
+            {Array.from({ length: HEATMAP_DAYS }).map((_, index) => {
+              const date = new Date(startDate);
+              date.setUTCDate(startDate.getUTCDate() + index);
+              const key = getUtcDateKey(date);
+              const entry = entriesByDate.get(key);
+              const isToday = key === getUtcDateKey(today);
+
+              const baseClass = "h-[8px] w-[8px] shrink-0 rounded-[4px] transition-all duration-200 sm:h-[10px] sm:w-[10px] md:h-[12px] md:w-[12px] lg:h-[14px] lg:w-[14px]";
+              const booleanClass = entry ? "border border-emerald-600/20 bg-emerald-500 shadow-sm shadow-emerald-500/20" : "border border-[color:var(--line)] bg-emerald-50/80";
+              const measurableOpacity = typeof entry?.value === "number" && entry.value > 0 ? Math.min(1, 0.4 + (entry.value / maxValue) * 0.6) : 0;
+              const measurableClass = entry && typeof entry.value === "number" && entry.value > 0 ? "border border-emerald-600/20 shadow-sm shadow-emerald-500/10" : "border border-[color:var(--line)] bg-emerald-50/80";
+
+              return (
+                <div
+                  key={`${habit.id}-${key}`}
+                  aria-label={`${key}: ${entry ? (habit.type === "BOOLEAN" ? "Logged" : `${entry.value ?? 0} ${habit.unit ?? "units"}`) : "No entry"}`}
+                  title={entry ? (habit.type === "BOOLEAN" ? "Logged today" : `${entry.value ?? 0} ${habit.unit ?? "units"}`) : "No entry"}
+                  className={`${baseClass} ${habit.type === "BOOLEAN" ? booleanClass : measurableClass} ${isToday ? "ring-2 ring-emerald-600/70 ring-offset-1 ring-offset-white" : ""}`}
+                  style={
+                    habit.type === "MEASURABLE" && typeof entry?.value === "number" && entry.value > 0
+                      ? { backgroundColor: `rgba(24, 136, 93, ${measurableOpacity})` }
+                      : undefined
+                  }
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -84,63 +127,63 @@ export default async function HabitsPage() {
   });
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-3xl px-6 py-10">
-      <header className="flex items-center justify-between gap-4">
+    <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+      <header className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-emerald-700">Habit Heatmap</p>
-          <h1 className="mt-1 text-2xl font-semibold text-zinc-950">Your habits</h1>
+          <p className="text-xs font-bold tracking-[0.22em] uppercase text-[color:var(--brand-strong)]">Habit Heatmap</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.05em] text-[color:var(--foreground)] sm:text-4xl">
+            Your habits
+          </h1>
         </div>
-        <SignOutButton />
+        <HeaderActions />
       </header>
 
-      <p className="mt-6 text-sm text-zinc-600">
-        You’re signed in as <span className="font-medium text-zinc-950">{session.user.name}</span>.
-      </p>
-
-      <HabitCreationForm />
-
       <section className="mt-8">
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <h2 className="text-lg font-semibold text-zinc-950">Habits</h2>
-          <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-            {habits.length} {habits.length === 1 ? "habit" : "habits"}
-          </span>
-        </div>
-
         {habits.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 p-6 text-zinc-600">
-            No habits yet. Create your first habit above.
+          <div className="mt-4 flex flex-col items-center justify-center rounded-[28px] border border-dashed border-[color:var(--line)] bg-white/65 p-12 text-center shadow-sm">
+            <div className="rounded-full bg-[color:var(--brand-soft)] p-3 text-[color:var(--brand-strong)]">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-6 w-6">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            </div>
+            <h3 className="mt-4 text-lg font-semibold text-[color:var(--foreground)]">No habits yet</h3>
+            <p className="mt-1 max-w-sm text-sm leading-6 text-[color:var(--muted)]">
+              Create your first habit above to start tracking your consistency.
+            </p>
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-6">
             {habits.map((habit) => (
-              <article key={habit.id} className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-zinc-950">{habit.name}</h3>
-                    <p className="mt-1 text-sm text-zinc-500">
-                      {habit.type === "BOOLEAN" ? "Yes / No" : `Measurable · ${habit.unit ?? "unit"}`}
-                    </p>
+              <article key={habit.id} className="group relative overflow-hidden rounded-[28px] border border-[color:var(--line)] bg-white/80 p-4 shadow-[0_18px_38px_rgba(19,31,28,0.06)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_42px_rgba(18,31,28,0.09)] sm:p-5">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-xl font-semibold tracking-[-0.04em] text-[color:var(--foreground)]">{habit.name}</h3>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="inline-flex items-center rounded-full bg-[color:var(--brand-soft)] px-2.5 py-1 text-[11px] font-medium text-[color:var(--brand-strong)]">
+                        {habit.type === "BOOLEAN" ? "Yes / No" : `Measurable · ${habit.unit ?? "unit"}`}
+                      </span>
+                    </div>
                   </div>
-                  <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700">
-                    {habit.type}
-                  </span>
+                  <div className="flex items-center gap-1 self-start opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+                    <HabitEditForm habit={habit} />
+                    <form action={async (formData: FormData) => {
+                      "use server";
+                      const { deleteHabit } = await import("./create-habit-action");
+                      await deleteHabit(formData);
+                    }}>
+                      <input type="hidden" name="habitId" value={habit.id} />
+                      <DeleteHabitButton />
+                    </form>
+                  </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-end gap-2">
-                  <HabitEditForm habit={habit} />
-                  <form action={async (formData: FormData) => {
-                    "use server";
-                    const { deleteHabit } = await import("./create-habit-action");
-                    await deleteHabit(formData);
-                  }}>
-                    <input type="hidden" name="habitId" value={habit.id} />
-                    <DeleteHabitButton habitId={habit.id} />
-                  </form>
+                <div className="mt-4 overflow-hidden rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel-strong)] p-3">
+                  <HabitHeatmap habit={habit} />
                 </div>
 
-                <HabitHeatmap habit={habit} />
-                <HabitLogForm habit={habit} />
+                <div className="mt-4">
+                  <HabitLogForm habit={habit} />
+                </div>
               </article>
             ))}
           </div>
