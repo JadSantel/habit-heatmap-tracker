@@ -37,8 +37,7 @@ function HabitHeatmap({ habit }: { habit: { id: string; type: "BOOLEAN" | "MEASU
   }
 
   return (
-    <div className="mt-6 w-full overflow-hidden px-2 pb-4 pt-1">
-      {/* Scrollable container — clips horizontally on mobile, natural on desktop */}
+    <div className="mt-6 w-full px-2 pb-4 pt-1">
       <div className="relative">
         {/* Right-edge fade: swipe affordance on mobile, hidden on larger screens */}
         <div
@@ -49,7 +48,7 @@ function HabitHeatmap({ habit }: { habit: { id: string; type: "BOOLEAN" | "MEASU
           aria-hidden="true"
         />
 
-        <div className="overflow-x-auto scrollbar-hide">
+        <div className="min-w-[860px] overflow-x-auto scrollbar-hide">
           {/* Month labels — scroll in sync with the grid */}
           <div className="mb-2 flex w-max gap-1 text-[9px] font-medium uppercase tracking-[0.18em] text-[color:var(--muted)] sm:mb-3">
             {monthLabels.map((month, index) => (
@@ -168,7 +167,7 @@ export default async function HabitsPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 overflow-hidden rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel-strong)] p-3">
+                <div className="mt-4 overflow-x-auto rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel-strong)] p-3">
                   <HabitHeatmap habit={habit} />
                 </div>
 
