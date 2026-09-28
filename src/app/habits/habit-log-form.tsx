@@ -16,7 +16,7 @@ function getUtcDateKey(date: Date) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())).toISOString().slice(0, 10);
 }
 
-export function HabitLogForm({ habit }: { habit: HabitSummary }) {
+export function HabitLogForm({ habit, compact = false }: { habit: HabitSummary; compact?: boolean }) {
   const [state, formAction, isPending] = useActionState(
     logHabitEntry as (prevState: HabitLogActionState | null, formData: FormData) => Promise<HabitLogActionState>,
     initialHabitLogState,
@@ -26,9 +26,16 @@ export function HabitLogForm({ habit }: { habit: HabitSummary }) {
   const loggedToday = habit.entries.some((entry) => getUtcDateKey(new Date(entry.date)) === todayKey);
 
   const todayValue = habit.entries.find((entry) => getUtcDateKey(new Date(entry.date)) === todayKey)?.value;
+  const formClassName = compact ? "space-y-2" : "mt-5 space-y-3";
+  const inputClassName = compact
+    ? "w-full rounded-xl border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-[color:var(--brand)] focus:bg-white focus:ring-4 focus:ring-[rgba(24,136,93,0.10)]"
+    : "w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-3.5 py-2.5 text-zinc-950 outline-none transition-all focus:border-[color:var(--brand)] focus:bg-white focus:ring-4 focus:ring-[rgba(24,136,93,0.10)]";
+  const buttonClassName = compact
+    ? "w-full rounded-xl bg-[color:var(--brand)] px-3 py-2 text-xs font-semibold text-white shadow-[0_8px_18px_rgba(24,136,93,0.18)] transition hover:bg-[color:var(--brand-strong)] disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500 disabled:shadow-none"
+    : "w-full rounded-full bg-[color:var(--brand)] px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(24,136,93,0.18)] transition-all hover:bg-[color:var(--brand-strong)] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500 disabled:shadow-none disabled:active:scale-100";
 
   return (
-    <form action={formAction} className="mt-5 space-y-3" noValidate>
+    <form action={formAction} className={formClassName} noValidate>
       <input type="hidden" name="habitId" value={habit.id} />
 
       {habit.type === "BOOLEAN" ? (
@@ -37,13 +44,13 @@ export function HabitLogForm({ habit }: { habit: HabitSummary }) {
           <button
             type="submit"
             disabled={isPending || loggedToday}
-            className="w-full rounded-full bg-[color:var(--brand)] px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(24,136,93,0.18)] transition-all hover:bg-[color:var(--brand-strong)] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500 disabled:shadow-none disabled:active:scale-100"
+            className={buttonClassName}
           >
             {isPending ? "Logging…" : loggedToday ? "Logged today" : "Done today"}
           </button>
         </>
       ) : (
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className={compact ? "flex flex-col gap-2" : "flex flex-col gap-2 sm:flex-row"}>
           <label className="sr-only" htmlFor={`habit-value-${habit.id}`}>
             {habit.name} value
           </label>
@@ -56,12 +63,12 @@ export function HabitLogForm({ habit }: { habit: HabitSummary }) {
             defaultValue={todayValue ?? ""}
             placeholder={habit.unit ?? "value"}
             aria-invalid={Boolean(state.fieldErrors.value)}
-            className="w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-3.5 py-2.5 text-zinc-950 outline-none transition-all focus:border-[color:var(--brand)] focus:bg-white focus:ring-4 focus:ring-[rgba(24,136,93,0.10)]"
+            className={inputClassName}
           />
           <button
             type="submit"
             disabled={isPending}
-            className="rounded-full bg-[color:var(--foreground)] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#0f201d] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
+            className={compact ? "rounded-xl bg-[color:var(--foreground)] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#0f201d] disabled:cursor-not-allowed disabled:opacity-60" : "rounded-full bg-[color:var(--foreground)] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#0f201d] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"}
           >
             {isPending ? "…" : "Log"}
           </button>

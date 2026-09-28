@@ -115,9 +115,21 @@ export function HeaderActions() {
     "relative flex h-9 w-9 items-center justify-center rounded-full border border-[color:var(--line)] bg-white/80 text-[color:var(--muted)] shadow-sm transition-all duration-200 hover:border-[color:var(--brand)] hover:text-[color:var(--brand-strong)] hover:shadow-md active:scale-95";
 
   return (
-    <>
+    <>  
       {/* ── Icon row ── */}
       <div className="flex items-center gap-2">
+        
+                {/* Add habit button */}
+        <button
+          type="button"
+          id="add-habit-icon-button"
+          aria-label="Add a new habit"
+          className={iconButtonClass}
+          onClick={() => setHabitModalOpen(true)}
+        >
+          <PlusIcon className="h-4 w-4" />
+        </button>
+        
         {/* Sort button (placeholder) */}
         <button
           type="button"
@@ -127,17 +139,6 @@ export function HeaderActions() {
           title="Sort habits (coming soon)"
         >
           <SortIcon className="h-4 w-4" />
-        </button>
-
-        {/* Add habit button */}
-        <button
-          type="button"
-          id="add-habit-icon-button"
-          aria-label="Add a new habit"
-          className={`${iconButtonClass} border-[color:var(--brand)]/40 bg-[color:var(--brand)] text-white hover:bg-[color:var(--brand-strong)] hover:text-white`}
-          onClick={() => setHabitModalOpen(true)}
-        >
-          <PlusIcon className="h-4 w-4" />
         </button>
 
         {/* Profile button */}

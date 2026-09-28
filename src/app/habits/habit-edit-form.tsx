@@ -3,6 +3,8 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { deleteHabit, updateHabit } from "./create-habit-action";
 import { initialHabitState, type HabitActionState } from "./habit-form-shared";
+import { initialHabitLogState, type HabitLogActionState } from "./habit-log-shared";
+import { logHabitEntry } from "./log-habit-action";
 
 type HabitEditFormProps = {
   habit: {
@@ -10,6 +12,7 @@ type HabitEditFormProps = {
     name: string;
     type: "BOOLEAN" | "MEASURABLE";
     unit: string | null;
+    entries: Array<{ date: Date; value: number | null }>;
   };
 };
 
@@ -17,9 +20,14 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [logOpen, setLogOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(
     updateHabit as (prevState: HabitActionState | null, formData: FormData) => Promise<HabitActionState>,
     initialHabitState,
+  );
+  const [logState, logFormAction, isLogPending] = useActionState(
+    logHabitEntry as (prevState: HabitLogActionState | null, formData: FormData) => Promise<HabitLogActionState>,
+    initialHabitLogState,
   );
 
   useEffect(() => {
@@ -28,6 +36,7 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
       if (menuRef.current && target instanceof Node && !menuRef.current.contains(target)) {
         setMenuOpen(false);
         setEditOpen(false);
+        setLogOpen(false);
       }
     }
 
@@ -54,7 +63,7 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
             <form action={formAction} className="space-y-4" noValidate>
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-semibold text-[color:var(--foreground)]">Edit habit</h4>
-                <button type="button" onClick={() => setEditOpen(false)} className="text-xs font-medium text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]">
+                <button type="button" onClick={() => { setEditOpen(false); setLogOpen(false); }} className="text-xs font-medium text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]">
                   Back
                 </button>
               </div>
@@ -111,8 +120,81 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
                 </button>
               </div>
             </form>
+          ) : logOpen ? (
+            <form action={logFormAction} className="space-y-3" noValidate>
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-[color:var(--foreground)]">Log habit</h4>
+                <button type="button" onClick={() => setLogOpen(false)} className="text-xs font-medium text-[color:var(--muted)] transition hover:text-[color:var(--foreground)]">
+                  Back
+                </button>
+              </div>
+
+              <input type="hidden" name="habitId" value={habit.id} />
+
+              {habit.type === "BOOLEAN" ? (
+                <>
+                  <input type="hidden" name="value" value="true" />
+                  <button
+                    type="submit"
+                    disabled={isLogPending}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[color:var(--brand)] px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-[color:var(--brand-strong)] disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4 w-4">
+                      <path d="M6 4.75A2.75 2.75 0 0 1 8.75 2h6.5A2.75 2.75 0 0 1 18 4.75V18a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4.75Zm5 3.5h4m-4 4h4m-4 4h2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    {isLogPending ? "Logging…" : "Log"}
+                  </button>
+                </>
+              ) : (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-zinc-800">
+                    Value
+                    <input
+                      name="value"
+                      type="number"
+                      min="0.1"
+                      step="0.1"
+                      placeholder={habit.unit ?? "value"}
+                      aria-invalid={Boolean(logState.fieldErrors.value)}
+                      className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                    />
+                  </label>
+
+                  <button
+                    type="submit"
+                    disabled={isLogPending}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-[color:var(--brand)] px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-[color:var(--brand-strong)] disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4 w-4">
+                      <path d="M6 4.75A2.75 2.75 0 0 1 8.75 2h6.5A2.75 2.75 0 0 1 18 4.75V18a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4.75Zm5 3.5h4m-4 4h4m-4 4h2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    {isLogPending ? "Logging…" : "Log"}
+                  </button>
+                </div>
+              )}
+
+              {logState.fieldErrors.value ? <p className="text-sm text-red-700">{logState.fieldErrors.value}</p> : null}
+
+              {logState.message ? (
+                <p className={logState.success ? "text-sm text-emerald-700" : "text-sm text-red-700"} role="status">
+                  {logState.message}
+                </p>
+              ) : null}
+            </form>
           ) : (
             <div className="space-y-2">
+              
+              <button
+                type="button"
+                onClick={() => setLogOpen(true)}
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-zinc-800 transition hover:bg-zinc-100"
+              >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4 w-4">
+                  <path d="M6 4.75A2.75 2.75 0 0 1 8.75 2h6.5A2.75 2.75 0 0 1 18 4.75V18a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4.75Zm5 3.5h4m-4 4h4m-4 4h2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Log
+              </button>
+              
               <button
                 type="button"
                 onClick={() => setEditOpen(true)}

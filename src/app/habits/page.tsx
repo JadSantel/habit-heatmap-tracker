@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { HabitEditForm } from "./habit-edit-form";
-import { HabitLogForm } from "./habit-log-form";
 import { HeaderActions } from "./header-actions";
 
 const HEATMAP_DAYS = 365;
@@ -171,9 +170,6 @@ export default async function HabitsPage() {
                   <HabitHeatmap habit={habit} />
                 </div>
 
-                <div className="mt-4">
-                  <HabitLogForm habit={habit} />
-                </div>
               </article>
             ))}
           </div>
