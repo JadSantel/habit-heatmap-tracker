@@ -2,7 +2,6 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { DeleteHabitButton } from "./delete-habit-button";
 import { HabitEditForm } from "./habit-edit-form";
 import { HabitLogForm } from "./habit-log-form";
 import { HeaderActions } from "./header-actions";
@@ -164,16 +163,8 @@ export default async function HabitsPage() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 self-start opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+                  <div className="self-start">
                     <HabitEditForm habit={habit} />
-                    <form action={async (formData: FormData) => {
-                      "use server";
-                      const { deleteHabit } = await import("./create-habit-action");
-                      await deleteHabit(formData);
-                    }}>
-                      <input type="hidden" name="habitId" value={habit.id} />
-                      <DeleteHabitButton />
-                    </form>
                   </div>
                 </div>
 
