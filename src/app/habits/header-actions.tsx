@@ -226,8 +226,16 @@ export function HeaderActions() {
 
       {/* ── Habit creation modal ── */}
       {habitModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#12211d]/40 p-4 backdrop-blur-[2px]">
-          <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-[30px] border border-[color:var(--line)] bg-white p-4 shadow-[0_30px_70px_rgba(11,18,16,0.18)] sm:p-6">
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-[#12211d]/40 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
+          onClick={() => setHabitModalOpen(false)}
+          aria-modal="true"
+          role="dialog"
+        >
+          <div
+            className="w-full max-h-[92vh] overflow-y-auto rounded-t-[30px] border border-[color:var(--line)] bg-white p-4 shadow-[0_-20px_55px_rgba(11,18,16,0.18)] sm:max-w-lg sm:rounded-[30px] sm:p-6 sm:shadow-[0_30px_70px_rgba(11,18,16,0.18)]"
+            onClick={(event) => event.stopPropagation()}
+          >
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-bold tracking-[0.2em] uppercase text-[color:var(--brand-strong)]">
@@ -240,11 +248,13 @@ export function HeaderActions() {
               <button
                 type="button"
                 onClick={() => setHabitModalOpen(false)}
-                className="rounded-full border border-[color:var(--line)] bg-white px-3 py-1.5 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--brand)]"
+                className="rounded-full border border-[color:var(--line)] bg-white px-3 py-1.5 text-sm font-medium text-[color:var(--foreground)] transition hover:border-[color:var(--brand)] hover:text-[color:var(--brand-strong)]"
               >
                 Close
               </button>
             </div>
+
+            <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-zinc-200 sm:hidden" aria-hidden="true" />
 
             <HabitCreationForm onSuccessClose={() => setHabitModalOpen(false)} />
           </div>
