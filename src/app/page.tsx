@@ -103,21 +103,6 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          {[
-            { dot: "bg-amber-400", text: "Daily logging" },
-            { dot: "bg-amber-300", text: "Momentum view" },
-            { dot: "bg-amber-200", text: "Low friction" },
-          ].map((tag) => (
-            <div
-              key={tag.text}
-              className="flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.03] px-3.5 py-1.5 text-xs font-medium tracking-wide text-white/40"
-            >
-              <span className={`h-1.5 w-1.5 rounded-full ${tag.dot}`} />
-              {tag.text}
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* ── Floating glass demo card ── */}
