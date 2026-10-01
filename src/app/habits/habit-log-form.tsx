@@ -28,11 +28,11 @@ export function HabitLogForm({ habit, compact = false }: { habit: HabitSummary; 
   const todayValue = habit.entries.find((entry) => getUtcDateKey(new Date(entry.date)) === todayKey)?.value;
   const formClassName = compact ? "space-y-2" : "mt-5 space-y-3";
   const inputClassName = compact
-    ? "w-full rounded-xl border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-3 py-2 text-sm text-zinc-950 outline-none transition focus:border-[color:var(--brand)] focus:bg-white focus:ring-4 focus:ring-[rgba(24,136,93,0.10)]"
-    : "w-full rounded-2xl border border-[color:var(--line)] bg-[color:var(--panel-strong)] px-3.5 py-2.5 text-zinc-950 outline-none transition-all focus:border-[color:var(--brand)] focus:bg-white focus:ring-4 focus:ring-[rgba(24,136,93,0.10)]";
+    ? "w-full rounded-lg border border-white/[0.12] bg-white/[0.05] px-3 py-2 text-sm text-white placeholder:text-white/50 outline-none transition focus:border-[#d8ad76] focus:ring-2 focus:ring-[#c28a4b]/25"
+    : "w-full rounded-xl border border-white/[0.12] bg-white/[0.05] px-3.5 py-2.5 text-sm text-white placeholder:text-white/50 outline-none transition-all focus:border-[#d8ad76] focus:ring-2 focus:ring-[#c28a4b]/25";
   const buttonClassName = compact
-    ? "w-full rounded-xl bg-[color:var(--brand)] px-3 py-2 text-xs font-semibold text-white shadow-[0_8px_18px_rgba(24,136,93,0.18)] transition hover:bg-[color:var(--brand-strong)] disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500 disabled:shadow-none"
-    : "w-full rounded-full bg-[color:var(--brand)] px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(24,136,93,0.18)] transition-all hover:bg-[color:var(--brand-strong)] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500 disabled:shadow-none disabled:active:scale-100";
+    ? "w-full rounded-full bg-[#c28a4b] px-3 py-2 text-xs font-semibold text-[#1b130a] transition hover:bg-[#d1a36a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89] disabled:cursor-not-allowed disabled:bg-white/[0.1] disabled:text-white/55"
+    : "w-full rounded-full bg-[#c28a4b] px-4 py-3 text-sm font-semibold text-[#1b130a] transition-all hover:bg-[#d1a36a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89] active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-white/[0.1] disabled:text-white/55 disabled:active:scale-100";
 
   return (
     <form action={formAction} className={formClassName} noValidate>
@@ -68,17 +68,17 @@ export function HabitLogForm({ habit, compact = false }: { habit: HabitSummary; 
           <button
             type="submit"
             disabled={isPending}
-            className={compact ? "rounded-xl bg-[color:var(--foreground)] px-4 py-2 text-xs font-semibold text-white transition hover:bg-[#0f201d] disabled:cursor-not-allowed disabled:opacity-60" : "rounded-full bg-[color:var(--foreground)] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#0f201d] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"}
+            className={compact ? "rounded-full bg-[#c28a4b] px-4 py-2 text-xs font-semibold text-[#1b130a] transition hover:bg-[#d1a36a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89] disabled:cursor-not-allowed disabled:opacity-60" : "rounded-full bg-[#c28a4b] px-5 py-2.5 text-sm font-semibold text-[#1b130a] transition-all hover:bg-[#d1a36a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"}
           >
             {isPending ? "…" : "Log"}
           </button>
         </div>
       )}
 
-      {state.fieldErrors.value ? <p className="text-sm text-red-700">{state.fieldErrors.value}</p> : null}
+      {state.fieldErrors.value ? <p className="text-sm text-red-300">{state.fieldErrors.value}</p> : null}
 
       {state.message ? (
-        <p className={state.success ? "text-sm text-emerald-700" : "text-sm text-red-700"} role="status">
+        <p className={state.success ? "text-sm text-emerald-300" : "text-sm text-red-300"} role="status">
           {state.message}
         </p>
       ) : null}

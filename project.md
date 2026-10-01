@@ -336,7 +336,9 @@ Registration, login, logout, protected route, session validation.
 **Definition of done:** No action can be performed on another user's data.
 
 ### Milestone 8 — UI Polish
-**Objective:** Responsive layout, loading states, empty states, error states.
+**Objective:** Responsive layout, loading states, empty states, and error states.
+**Habits dashboard requirement:** Redesign `/habits` with the landing page's dark MapaBit visual language while keeping the annual heatmap primary and making today's log action available beside each habit.
+**Acceptance criteria:** At desktop and 390px mobile widths, habit data and controls remain readable; only the annual heatmap region may scroll horizontally. Boolean logging remains one action, measurable logging remains a positive numeric value, and create/edit/delete flows remain available.
 
 ### Milestone 9 — Testing
 **Objective:** Manual test checklist passed; basic smoke tests written.
@@ -376,3 +378,4 @@ When these are proposed, evaluate as: Required for MVP? | Useful but can wait | 
 | 8 | Create habits through a server action on the protected dashboard | Keeps the primary workflow in one place, validates input before persistence, and avoids a separate API layer for the MVP | Client-only form logic, custom REST endpoint | The dashboard needs a form with Zod validation and a database create call tied to the authenticated user |
 | 9 | Validate all user-supplied identifiers and boolean payloads before the database layer | Prevents malformed form submissions from bypassing server-side checks and reduces the chance of accidental writes to the wrong record | Accept all client input and rely on Prisma or UI-only validation | Every server action now fails closed when the input is missing or malformed, preserving the principle that only the authenticated owner can mutate a habit |
 | 10 | Redesign the landing page around the daily logging flow with selective glassmorphism | Make the product's low-friction habit logging concrete while giving the landing page a more distinctive visual identity | Keep the current generic split hero, or apply glass effects uniformly | Preserve the MapaBit name and sign-in/register paths; keep the heatmap as product proof and ensure readable contrast on mobile |
+| 11 | Extend the landing page's dark MapaBit visual language to the habits dashboard with a heatmap-led ledger | Keep the authenticated daily workflow visually connected to the landing page while preserving the 365-day heatmap as the main record | Retain the light green dashboard or put today's actions ahead of all history | Keep all data and server actions unchanged; align each habit's log control with its annual grid and contain horizontal scrolling to that grid on mobile |

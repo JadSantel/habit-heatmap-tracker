@@ -1,0 +1,72 @@
+{
+  "title": "Choose the habits dashboard layout",
+  "question": "Which arrangement makes the daily check-in and long-term consistency easiest to read? All options keep the dark MapaBit canvas, warm bronze activity, and existing habit controls.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Daily Desk",
+      "kicker": "THE ROLL",
+      "thesis": "Today's check-in leads; the year of consistency follows beneath it.",
+      "palette": ["#050505", "#c28a4b", "#f5f0e8"],
+      "materials": ["near-black canvas", "smoked glass", "bronze heatmap cells"],
+      "viewport": "A compact masthead and live totals lead into today's habit actions; each 365-day heatmap sits directly below its habit.",
+      "risk": "History starts lower on the page, so the daily action must stay compact.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "MapaBit masthead and profile actions", "x": 0, "y": 0, "w": 12, "h": 1},
+          {"label": "Your habits title and add action", "x": 0, "y": 1, "w": 12, "h": 2, "accent": true},
+          {"label": "Habit and entry totals", "x": 0, "y": 3, "w": 12, "h": 1},
+          {"label": "Today's check-in rows", "x": 0, "y": 4, "w": 12, "h": 2, "accent": true},
+          {"label": "Per-habit annual heatmap list", "x": 0, "y": 6, "w": 12, "h": 4}
+        ]
+      }
+    },
+    {
+      "id": "model-pick",
+      "label": "Heatmap Ledger",
+      "kicker": "IMPECCABLE'S PICK",
+      "thesis": "The heatmaps are the index; every habit's action sits beside its history.",
+      "palette": ["#050505", "#c28a4b", "#f5f0e8"],
+      "materials": ["near-black canvas", "smoked glass", "bronze heatmap cells"],
+      "viewport": "A narrow title and summary lead into full-width habit rows, each pairing the 365-day contribution grid with its log control.",
+      "risk": "The year grid is dense on a phone, so it needs its own horizontal scroll area.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "MapaBit masthead and profile actions", "x": 0, "y": 0, "w": 12, "h": 1},
+          {"label": "Title, summary, and add action", "x": 0, "y": 1, "w": 12, "h": 2},
+          {"label": "Shared annual heatmap ledger by habit", "x": 0, "y": 3, "w": 12, "h": 6, "accent": true},
+          {"label": "Today actions aligned to habit rows", "x": 9, "y": 3, "w": 3, "h": 6}
+        ]
+      }
+    },
+    {
+      "id": "challenger-habit-notes",
+      "label": "Habit Field Notes",
+      "verdict": "competitive",
+      "lineage": "A working notebook with one tab per ongoing practice",
+      "thesis": "Each habit gets a distinct, readable record with its own activity trace.",
+      "palette": ["#050505", "#c28a4b", "#f5f0e8"],
+      "materials": ["near-black canvas", "smoked glass", "bronze heatmap cells"],
+      "viewport": "A two-column desktop spread of compact habit panels; each panel puts name and action above a scaled annual grid, stacking on mobile.",
+      "case": "Separates habits clearly and makes the dashboard easy to scan when the list grows.",
+      "risk": "Per-habit panels use more vertical space than a unified ledger.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "MapaBit masthead and profile actions", "x": 0, "y": 0, "w": 12, "h": 1},
+          {"label": "Title, totals, and add action", "x": 0, "y": 1, "w": 12, "h": 2},
+          {"label": "Habit record one", "x": 0, "y": 3, "w": 6, "h": 6, "accent": true},
+          {"label": "Habit record two", "x": 6, "y": 3, "w": 6, "h": 6, "accent": true}
+        ]
+      }
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code", "toggle": false},
+  "steer": true
+}
