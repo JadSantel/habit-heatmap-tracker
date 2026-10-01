@@ -24,6 +24,15 @@ function HabitHeatmap({ habit }: { habit: { id: string; type: "BOOLEAN" | "MEASU
     .map((entry) => entry.value)
     .filter((value): value is number => typeof value === "number" && value > 0);
   const maxValue = measurableValues.length > 0 ? Math.max(...measurableValues) : 1;
+  const todayKey = getUtcDateKey(today);
+  const todayEntry = entriesByDate.get(todayKey);
+  const heatmapSummary = `${habit.entries.length} ${habit.entries.length === 1 ? "day" : "days"} logged in the last 365 days. ${
+    todayEntry
+      ? habit.type === "BOOLEAN"
+        ? "Logged today."
+        : `${todayEntry.value ?? 0} ${habit.unit ?? "units"} logged today.`
+      : "Not logged today."
+  }`;
 
   const monthLabels: string[] = [];
   const monthCursor = new Date(startDate);
@@ -38,7 +47,11 @@ function HabitHeatmap({ habit }: { habit: { id: string; type: "BOOLEAN" | "MEASU
   }
 
   return (
-    <div className="mt-5 w-full rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-4 sm:px-4">
+    <div
+      role="img"
+      aria-label={heatmapSummary}
+      className="mt-5 w-full rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-4 sm:px-4"
+    >
       <div className="relative">
         <div
           className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 rounded-r-xl sm:hidden"
@@ -63,7 +76,7 @@ function HabitHeatmap({ habit }: { habit: { id: string; type: "BOOLEAN" | "MEASU
 
             <div
               className="grid w-max grid-flow-col grid-rows-7 gap-0.5 sm:gap-0.75"
-              aria-label={`${habit.type === "BOOLEAN" ? "Boolean" : "Measurable"} habit heatmap`}
+              aria-hidden="true"
               dir="ltr"
             >
               {Array.from({ length: HEATMAP_DAYS }).map((_, index) => {
@@ -82,6 +95,9 @@ function HabitHeatmap({ habit }: { habit: { id: string; type: "BOOLEAN" | "MEASU
                 return (
                   <div
                     key={`${habit.id}-${key}`}
+                    data-heatmap-cell={key}
+                    data-entry-state={entry ? "logged" : "empty"}
+                    data-entry-value={entry?.value ?? undefined}
                     aria-label={`${key}: ${entry ? (habit.type === "BOOLEAN" ? "Logged" : `${entry.value ?? 0} ${habit.unit ?? "units"}`) : "No entry"}`}
                     title={entry ? (habit.type === "BOOLEAN" ? "Logged" : `${entry.value ?? 0} ${habit.unit ?? "units"}`) : "No entry"}
                     className={`${baseClass} ${habit.type === "BOOLEAN" ? booleanClass : measurableClass} ${isToday ? "ring-2 ring-[#d8ad76] ring-offset-1 ring-offset-[#10100f]" : ""}`}

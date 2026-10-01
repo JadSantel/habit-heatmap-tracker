@@ -53,6 +53,8 @@ export function HeaderActions() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+  const habitDialogRef = useRef<HTMLDialogElement>(null);
 
   // ── Habit creation modal state ──
   const [habitModalOpen, setHabitModalOpen] = useState(false);
@@ -86,6 +88,16 @@ export function HeaderActions() {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [profileOpen]);
 
+  useEffect(() => {
+    const dialog = habitDialogRef.current;
+    if (!habitModalOpen || !dialog) return;
+
+    dialog.showModal();
+    return () => {
+      if (dialog.open) dialog.close();
+    };
+  }, [habitModalOpen]);
+
   async function handleSignOut() {
     setSigningOut(true);
     await authClient.signOut();
@@ -94,7 +106,7 @@ export function HeaderActions() {
   }
 
   const iconButtonClass =
-    "relative flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] text-white/75 transition-all duration-200 hover:border-[#d8ad76]/60 hover:bg-white/[0.08] hover:text-[#e1bc89] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89] active:scale-95";
+    "relative flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] text-white/75 transition-all duration-200 hover:border-[#d8ad76]/60 hover:bg-white/[0.08] hover:text-[#e1bc89] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89] active:scale-95";
 
   return (
     <>  
@@ -103,10 +115,13 @@ export function HeaderActions() {
         
                 {/* Add habit button */}
         <button
+          ref={addButtonRef}
           type="button"
           id="add-habit-icon-button"
           aria-label="Add a new habit"
-          className="inline-flex h-10 items-center gap-2 rounded-full bg-[#c28a4b] px-4 text-sm font-semibold text-[#1b130a] transition hover:bg-[#d1a36a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89]"
+          aria-haspopup="dialog"
+          aria-expanded={habitModalOpen}
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-[#c28a4b] px-4 text-sm font-semibold text-[#1b130a] transition hover:bg-[#d1a36a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89]"
           onClick={() => setHabitModalOpen(true)}
         >
           <PlusIcon className="h-4 w-4" />
@@ -134,39 +149,6 @@ export function HeaderActions() {
               role="menu"
               aria-label="Profile options"
             >
-              <button
-                type="button"
-                id="settings-button"
-                role="menuitem"
-                className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white/85 transition-colors hover:bg-white/[0.08]"
-                onClick={() => {
-                  setProfileOpen(false);
-                  // Settings functionality not yet implemented
-                }}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden="true"
-                  className="h-4 w-4 text-white/60"
-                >
-                  <path
-                    d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                  />
-                  <path
-                    d="M19.622 10.395l-1.097-2.65L20 6l-2-2-1.735 1.483-2.707-1.113L12.935 2h-1.954l-.632 2.401-2.645 1.115L6 4 4 6l1.453 1.789-1.08 2.657L2 11v2l2.401.655 1.09 2.662L4 18l2 2 1.742-1.469 2.625 1.07L11 22h2l.604-2.387 2.651-1.098L18 20l2-2-1.547-1.767 1.098-2.6L22 13v-2l-2.378-.605Z"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Settings
-              </button>
-
-              <div className="my-1 h-px bg-white/[0.1]" role="separator" />
-
               <button
                 type="button"
                 id="sign-out-menu-button"
@@ -198,29 +180,31 @@ export function HeaderActions() {
 
       {/* ── Habit creation modal ── */}
       {habitModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 p-0 backdrop-blur-sm sm:items-center sm:p-4"
-          onClick={() => setHabitModalOpen(false)}
-          aria-modal="true"
-          role="dialog"
+        <dialog
+          ref={habitDialogRef}
+          aria-labelledby="create-habit-title"
+          className="fixed inset-x-0 bottom-0 top-auto m-0 max-h-[92dvh] w-full max-w-none overflow-y-auto rounded-t-2xl border border-white/[0.12] bg-[#10100f] p-4 text-[#f5f0e8] shadow-[0_24px_70px_rgba(0,0,0,0.55)] backdrop:bg-black/75 backdrop:backdrop-blur-sm sm:inset-0 sm:m-auto sm:max-w-lg sm:rounded-2xl sm:p-6"
+          onClose={() => {
+            setHabitModalOpen(false);
+            addButtonRef.current?.focus();
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) event.currentTarget.close();
+          }}
         >
-          <div
-            className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl border border-white/[0.12] bg-[#10100f] p-4 shadow-[0_24px_70px_rgba(0,0,0,0.55)] sm:max-w-lg sm:rounded-2xl sm:p-6"
-            onClick={(event) => event.stopPropagation()}
-          >
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-bold tracking-[0.16em] uppercase text-[#d4a66d]">
                   New habit
                 </p>
-                <h2 className="mt-2 text-2xl font-semibold text-white">
+                <h2 id="create-habit-title" className="mt-2 text-2xl font-semibold text-white">
                   Add a habit
                 </h2>
               </div>
               <button
                 type="button"
-                onClick={() => setHabitModalOpen(false)}
-                className="rounded-full border border-white/[0.14] bg-white/[0.04] px-3 py-1.5 text-sm font-medium text-white/75 transition hover:border-[#d8ad76]/60 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89]"
+                onClick={() => habitDialogRef.current?.close()}
+                className="min-h-11 rounded-full border border-white/[0.14] bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/75 transition hover:border-[#d8ad76]/60 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89]"
               >
                 Close
               </button>
@@ -228,9 +212,8 @@ export function HeaderActions() {
 
             <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-zinc-200 sm:hidden" aria-hidden="true" />
 
-            <HabitCreationForm onSuccessClose={() => setHabitModalOpen(false)} />
-          </div>
-        </div>
+            <HabitCreationForm onSuccessClose={() => habitDialogRef.current?.close()} />
+        </dialog>
       )}
     </>
   );

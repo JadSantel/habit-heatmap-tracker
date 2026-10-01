@@ -37,13 +37,15 @@ export function HabitCreationForm({ onSuccessClose }: HabitCreationFormProps = {
           <input
             name="name"
             type="text"
+            autoFocus
             defaultValue=""
             placeholder="Morning run"
             aria-invalid={Boolean(state.fieldErrors.name)}
+            aria-describedby={state.fieldErrors.name ? "create-habit-name-error" : undefined}
             className="mt-1.5 w-full rounded-lg border border-white/[0.12] bg-white/[0.05] px-3.5 py-2.5 text-white placeholder:text-white/50 outline-none transition focus:border-[#d8ad76] focus:ring-2 focus:ring-[#c28a4b]/25"
           />
         </label>
-        {state.fieldErrors.name ? <p className="text-sm text-red-300">{state.fieldErrors.name}</p> : null}
+        {state.fieldErrors.name ? <p id="create-habit-name-error" className="text-sm text-red-300">{state.fieldErrors.name}</p> : null}
 
         <fieldset className="space-y-3">
           <legend className="text-sm font-medium text-white/85">Habit type</legend>
@@ -69,11 +71,12 @@ export function HabitCreationForm({ onSuccessClose }: HabitCreationFormProps = {
             defaultValue=""
             placeholder="minutes, pages, km"
             aria-invalid={Boolean(state.fieldErrors.unit)}
+            aria-describedby={state.fieldErrors.unit ? "create-habit-unit-error" : "create-habit-unit-hint"}
             className="mt-1.5 w-full rounded-lg border border-white/[0.12] bg-white/[0.05] px-3.5 py-2.5 text-white placeholder:text-white/50 outline-none transition focus:border-[#d8ad76] focus:ring-2 focus:ring-[#c28a4b]/25"
           />
         </label>
-        <p className="-mt-2 text-xs text-white/65">Only required for measurable habits, such as minutes or pages.</p>
-        {state.fieldErrors.unit ? <p className="text-sm text-red-300">{state.fieldErrors.unit}</p> : null}
+        <p id="create-habit-unit-hint" className="-mt-2 text-xs text-white/65">Only required for measurable habits, such as minutes or pages.</p>
+        {state.fieldErrors.unit ? <p id="create-habit-unit-error" className="text-sm text-red-300">{state.fieldErrors.unit}</p> : null}
 
         {state.message ? (
           <p className={state.success ? "text-sm text-emerald-300" : "text-sm text-red-300"} role="status">

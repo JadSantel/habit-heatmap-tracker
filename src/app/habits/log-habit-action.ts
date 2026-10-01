@@ -98,8 +98,8 @@ export async function logHabitEntry(
       success: true,
       message:
         habit.type === "BOOLEAN"
-          ? `Logged “${habit.name}” for today.`
-          : `Logged ${Number(result.data.value).toFixed(1).replace(/\.0$/, "")} ${habit.unit ?? "units"} for “${habit.name}”.`,
+          ? ""
+          : "",
       fieldErrors: {},
     };
   } catch (error) {

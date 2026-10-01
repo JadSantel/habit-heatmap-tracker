@@ -18,6 +18,8 @@ type HabitEditFormProps = {
 
 export function HabitEditForm({ habit }: HabitEditFormProps) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
@@ -44,13 +46,32 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
     return () => document.removeEventListener("mousedown", handlePointerDown);
   }, []);
 
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!menuOpen || !dialog) return;
+
+    dialog.showModal();
+    return () => {
+      if (dialog.open) dialog.close();
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (state.success || logState.success) {
+      dialogRef.current?.close();
+    }
+  }, [state.success, logState.success]);
+
   return (
     <div ref={menuRef} className="relative">
       <button
+        ref={triggerRef}
         type="button"
         aria-label={`Open actions for ${habit.name}`}
+        aria-expanded={menuOpen}
+        aria-haspopup="dialog"
         onClick={() => setMenuOpen((current) => !current)}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] text-white/75 transition hover:border-[#d8ad76]/60 hover:bg-white/[0.08] hover:text-[#e1bc89] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89]"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.04] text-white/75 transition hover:border-[#d8ad76]/60 hover:bg-white/[0.08] hover:text-[#e1bc89] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89]"
       >
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="h-4 w-4">
           <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25ZM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -58,7 +79,20 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
       </button>
 
       {menuOpen ? (
-        <div className="absolute right-0 top-full z-20 mt-2 w-64 rounded-xl border border-white/[0.12] bg-[#10100f]/95 p-2 shadow-[0_18px_40px_rgba(0,0,0,0.55)] backdrop-blur-sm">
+        <dialog
+          ref={dialogRef}
+          aria-label={`${habit.name} actions`}
+          className="fixed inset-x-4 bottom-4 top-auto m-0 max-h-[calc(100dvh-2rem)] w-auto overflow-y-auto rounded-xl border border-white/[0.12] bg-[#10100f]/95 p-2 text-[#f5f0e8] shadow-[0_18px_40px_rgba(0,0,0,0.55)] backdrop:bg-black/60 backdrop:backdrop-blur-[2px] sm:inset-0 sm:m-auto sm:w-64"
+          onClose={() => {
+            setMenuOpen(false);
+            setEditOpen(false);
+            setLogOpen(false);
+            triggerRef.current?.focus();
+          }}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) event.currentTarget.close();
+          }}
+        >
           {editOpen ? (
             <form action={formAction} className="space-y-4" noValidate>
               <div className="flex items-center justify-between">
@@ -76,12 +110,14 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
                 <input
                   name="name"
                   type="text"
+                  autoFocus
                   defaultValue={habit.name}
                   aria-invalid={Boolean(state.fieldErrors.name)}
+                  aria-describedby={state.fieldErrors.name ? `habit-name-error-${habit.id}` : undefined}
                   className="mt-1 w-full rounded-lg border border-white/[0.14] bg-white/[0.05] px-3 py-2 text-white outline-none transition focus:border-[#d8ad76] focus:ring-2 focus:ring-[#c28a4b]/25"
                 />
               </label>
-              {state.fieldErrors.name ? <p className="text-sm text-red-300">{state.fieldErrors.name}</p> : null}
+              {state.fieldErrors.name ? <p id={`habit-name-error-${habit.id}`} className="text-sm text-red-300">{state.fieldErrors.name}</p> : null}
 
               <div className="rounded-lg border border-white/[0.12] bg-white/[0.04] px-3 py-2 text-sm text-white/65">
                 Type: <span className="font-medium text-white">{habit.type === "BOOLEAN" ? "Yes / No" : "Measurable"}</span>
@@ -95,11 +131,12 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
                     type="text"
                     defaultValue={habit.unit ?? ""}
                     aria-invalid={Boolean(state.fieldErrors.unit)}
+                    aria-describedby={state.fieldErrors.unit ? `habit-unit-error-${habit.id}` : undefined}
                     className="mt-1 w-full rounded-lg border border-white/[0.14] bg-white/[0.05] px-3 py-2 text-white outline-none transition focus:border-[#d8ad76] focus:ring-2 focus:ring-[#c28a4b]/25"
                   />
                 </label>
               ) : null}
-              {state.fieldErrors.unit ? <p className="text-sm text-red-300">{state.fieldErrors.unit}</p> : null}
+              {state.fieldErrors.unit ? <p id={`habit-unit-error-${habit.id}`} className="text-sm text-red-300">{state.fieldErrors.unit}</p> : null}
 
               {state.message ? (
                 <p className={state.success ? "text-sm text-emerald-300" : "text-sm text-red-300"} role="status">
@@ -108,7 +145,7 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
               ) : null}
 
               <div className="flex justify-end gap-2 pt-1">
-                <button type="button" onClick={() => setMenuOpen(false)} className="rounded-full border border-white/[0.14] bg-white/[0.04] px-3 py-2 text-sm font-medium text-white/75 transition hover:bg-white/[0.08] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89]">
+                <button type="button" onClick={() => dialogRef.current?.close()} className="min-h-11 rounded-full border border-white/[0.14] bg-white/[0.04] px-4 py-2 text-sm font-medium text-white/75 transition hover:bg-white/[0.08] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e1bc89]">
                   Close
                 </button>
                 <button
@@ -228,7 +265,7 @@ export function HabitEditForm({ habit }: HabitEditFormProps) {
               </form>
             </div>
           )}
-        </div>
+        </dialog>
       ) : null}
     </div>
   );

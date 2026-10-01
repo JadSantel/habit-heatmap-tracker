@@ -119,6 +119,28 @@ npm run build
 `next build` does not run ESLint automatically in Next.js 16, so linting is a
 separate required check.
 
+### Automated tests
+
+The schema-level tests run without external services:
+
+```powershell
+npm.cmd run test:unit
+```
+
+The V1 browser smoke suite uses Playwright and an isolated PostgreSQL database.
+Copy `.env.test.example` to `.env.test.local`, replace `E2E_DATABASE_URL` with a
+dedicated database whose name contains `test` or `e2e`, and then run:
+
+```powershell
+npm.cmd run test:e2e
+```
+
+The E2E configuration refuses to run against an ambiguously named database or
+without `E2E_ALLOW_DATABASE_RESET=true`. It applies committed migrations before
+starting Next.js, creates unique test users, and deletes only those users after
+the suite. Google and GitHub consent remain manual acceptance checks because
+they require external provider accounts.
+
 ## Environment variables
 
 | Variable | Purpose | Required locally | Safe for browser? |

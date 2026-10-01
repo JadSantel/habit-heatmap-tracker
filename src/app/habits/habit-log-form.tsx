@@ -63,6 +63,7 @@ export function HabitLogForm({ habit, compact = false }: { habit: HabitSummary; 
             defaultValue={todayValue ?? ""}
             placeholder={habit.unit ?? "value"}
             aria-invalid={Boolean(state.fieldErrors.value)}
+            aria-describedby={state.fieldErrors.value ? `habit-value-error-${habit.id}` : undefined}
             className={inputClassName}
           />
           <button
@@ -75,7 +76,7 @@ export function HabitLogForm({ habit, compact = false }: { habit: HabitSummary; 
         </div>
       )}
 
-      {state.fieldErrors.value ? <p className="text-sm text-red-300">{state.fieldErrors.value}</p> : null}
+      {state.fieldErrors.value ? <p id={`habit-value-error-${habit.id}`} className="text-sm text-red-300">{state.fieldErrors.value}</p> : null}
 
       {state.message ? (
         <p className={state.success ? "text-sm text-emerald-300" : "text-sm text-red-300"} role="status">
